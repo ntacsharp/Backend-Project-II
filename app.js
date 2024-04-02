@@ -25,7 +25,10 @@ app.use(cors());
 app.use(cookieParser());
 
 //routers
+const provinceRouter = require("./src/routers/ProvinceRouter");
 
+//routes
+app.use("/api/province", provinceRouter);
 
 //DB
 // connectToMongo();

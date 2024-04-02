@@ -4,7 +4,8 @@
   "description": "Backend cho Project II",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,8 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-async-handler": "^1.2.0",
-    "mongoose": "^8.2.4"
+    "mongoose": "^8.2.4",
+    "nodemon": "^3.1.0",
+    "uuid": "^9.0.1"
   }
 }
