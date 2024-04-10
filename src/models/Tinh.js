@@ -3,19 +3,17 @@ const { v4: uuidv4 } = require('uuid');
 
 mongoose.Promise = global.Promise;
 
-const provinceSchema = new mongoose.Schema({
+const tinhSchema = new mongoose.Schema({
     id: {
         type: String,
         default: uuidv4,
         unique: true,
         required: true
     },
-    name: {
+    ten: {
         type: String,
         required: true
     },
 })
 
-module.exports = {
-    provinceSchema
-}
+module.exports = mongoose.model('Tinh', tinhSchema);

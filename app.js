@@ -31,7 +31,7 @@ const provinceRouter = require("./src/routers/ProvinceRouter");
 app.use("/api/province", provinceRouter);
 
 //DB
-// connectToMongo();
+connectToMongo();
 
 app.get('/', (req, res) => {
     res.status(200);
