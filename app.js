@@ -24,14 +24,15 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 app.use(cookieParser());
 
+//DB
+connectToMongo();
+
 //routers
 const provinceRouter = require("./src/routers/ProvinceRouter");
 
 //routes
 app.use("/api/province", provinceRouter);
 
-//DB
-connectToMongo();
 
 app.get('/', (req, res) => {
     res.status(200);
