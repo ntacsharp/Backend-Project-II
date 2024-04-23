@@ -1,9 +1,8 @@
-const { GetProvince } = require("../controllers/ProvinceController");
+const { GetProvince, UpdateProvince } = require("../controllers/ProvinceController");
 const router = require('express').Router()
+const authMiddleware = require('../middlewares/AuthMiddleware');
 
-//router.get('/', ProvinceController.GetProvince);
-
-router.route("/")
-    .get(GetProvince);
+// router.get("/", authMiddleware, GetProvince);
+router.get("/", GetProvince);
 
 module.exports = router;

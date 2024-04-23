@@ -9,7 +9,8 @@ const providerSchema = new mongoose.Schema({
         required: false
     },
     passwordHarsh: String,
-    isDeleted: Boolean
+    isDeleted: Boolean,
+    isVerified: Boolean
 });
 
 module.exports = mongoose.model("Provider", providerSchema);

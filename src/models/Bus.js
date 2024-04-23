@@ -10,7 +10,8 @@ busSchema = new mongoose.Schema({
     providerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Provider"
-    }
+    },
+    isDeleted: Boolean
 })
 
 module.exports = mongoose.model("Bus", busSchema);

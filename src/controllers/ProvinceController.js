@@ -1,10 +1,10 @@
 const ProvinceService = require("../services/ProvinceService");
 
-exports.GetProvince = async (req, res) => {
-    try{
+const GetProvince = async (req, res) => {
+    try {
         const resp = await ProvinceService.GetProvince();
-        res.json({data: resp, status: "success"});
-    }catch(err){
+        res.json({ data: resp });
+    } catch (err) {
         res.status(500).json({ error: err.message });
     };
 
@@ -23,3 +23,7 @@ exports.GetProvince = async (req, res) => {
     //     });
     // }
 };
+
+module.exports = {
+    GetProvince
+}
