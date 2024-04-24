@@ -1,15 +1,16 @@
 const mongoose = require("mongoose");
 const User = require("../models/User");
 const AuthService = require("./AuthService");
+const bcrypt = require('bcrypt');
 
 const Login = async (req) => {
-    var foundUser = await User.findOne({ $or: [{ email: req.userName }, { phoneNumber: req.userName }] });
+    var foundUser = await User.findOne({ $or: [{ email: req.body.userName }, { phoneNumber: req.body.userName }] });
     if (foundUser == null) return {
         success: false,
         message: "Không tồn tại người dùng",
     };
-    if (req.password != null) {
-        if (bcrypt.compare(req.password, foundUser.passwordHarsh)) {
+    if (req.body.password != null) {
+        if (!bcrypt.compare(req.body.password, foundUser.passwordHarsh)) {
             return {
                 success: false,
                 message: "Sai tài khoản hoặc mật khẩu",
@@ -27,16 +28,16 @@ const Login = async (req) => {
 }
 
 const Register = async (req) => {
-    var foundUser = await User.findOne({ $or: [{ email: req.userName }, { phoneNumber: req.userName }] });
+    var foundUser = await User.findOne({ $or: [{ email: req.body.userName }, { phoneNumber: req.body.userName }] });
     if (foundUser != null) return {
         success: false,
         message: "Đã tồn tại người dùng",
     };
     const newUser = new User({
-        name: req.name,
-        phoneNumber: req.phoneNumber,
-        email: req.email,
-        passwordHarsh: await AuthService.hashPassword(req.password),
+        name: req.body.name,
+        phoneNumber: req.body.phoneNumber,
+        email: req.body.$oremail,
+        passwordHarsh: await AuthService.hashPassword(req.body.password),
         isDeleted: false
     });
     User.create(newUser);

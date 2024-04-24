@@ -2,7 +2,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
 const hashPassword = async (password) => {
-    return bcypt.hash(password, 10);
+    console.log(password);
+    return bcrypt.hash(password, 10);
 }
 const generateToken = (id) => {
     const payload = { id };
