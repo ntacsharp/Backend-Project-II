@@ -28,7 +28,7 @@ const Login = async (req) => {
 }
 
 const Register = async (req) => {
-    var foundUser = await User.findOne({ $or: [{ email: req.body.userName }, { phoneNumber: req.body.userName }] });
+    var foundUser = await User.findOne({ $or: [{ email: req.body.email }, { phoneNumber: req.body.phoneNumber }] });
     if (foundUser != null) return {
         success: false,
         message: "Đã tồn tại người dùng",
@@ -36,7 +36,7 @@ const Register = async (req) => {
     const newUser = new User({
         name: req.body.name,
         phoneNumber: req.body.phoneNumber,
-        email: req.body.$oremail,
+        email: req.body.email,
         passwordHarsh: await AuthService.hashPassword(req.body.password),
         isDeleted: false
     });

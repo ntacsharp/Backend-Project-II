@@ -22,17 +22,17 @@ const GetProvider = async (req, res) => {
 }
 
 const CreateProvider = async (req) => {
-    var foundProvider = await Provider.findOne({ $or: [{ email: req.userName }, { phoneNumber: req.userName }] });
+    var foundProvider = await Provider.findOne({ $or: [{ email: req.body.userName }, { phoneNumber: req.body.userName }] });
     if (foundProvider != null) return {
         success: false,
         message: "Đã tồn tại nhà xe",
     };
     const newProvider = new Provider({
-        name: req.name,
-        phoneNumber: req.phoneNumber,
-        email: req.email,
-        address: req.address,
-        passwordHarsh: await AuthService.hashPassword(req.password),
+        name: req.body.name,
+        phoneNumber: req.body.phoneNumber,
+        email: req.body.email,
+        address: req.body.address,
+        passwordHarsh: await AuthService.hashPassword(req.body.password),
         isDeleted: false,
         isVerified: false
     });
@@ -44,7 +44,7 @@ const CreateProvider = async (req) => {
 }
 
 const Login = async (req) => {
-    var foundProvider = await Provider.findOne({ $or: [{ email: req.userName }, { phoneNumber: req.userName }] });
+    var foundProvider = await Provider.findOne({ $or: [{ email: req.body.userName }, { phoneNumber: req.body.userName }] });
     if (foundProvider == null) return {
         success: false,
         message: "Không tồn tại nhà xe",
@@ -53,8 +53,8 @@ const Login = async (req) => {
         success: false,
         message: "Nhà xe chưa được xác nhận",
     };
-    if (req.password != null) {
-        if (bcrypt.compare(req.password, foundProvider.passwordHarsh)) {
+    if (req.body.password != null) {
+        if (bcrypt.compare(req.body.password, foundProvider.passwordHarsh)) {
             return {
                 success: false,
                 message: "Sai tài khoản hoặc mật khẩu",
