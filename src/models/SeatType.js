@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
 seatTypeSchema = new mongoose.Schema({
-    busId: {
+    busTypeId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Bus"
+        ref: "BusType"
     },
     price: Number,
     isDeleted: Boolean

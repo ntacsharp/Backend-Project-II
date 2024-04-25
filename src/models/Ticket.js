@@ -5,9 +5,9 @@ const ticketSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Trip"
     },
-    userId: {
+    seatId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: "Seat"
     },
     totalPrice: Number,
     isDeleted: Boolean

@@ -11,6 +11,10 @@ busSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Provider"
     },
+    busTypeId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "BusType"
+    },
     isDeleted: Boolean
 })
 
