@@ -5,9 +5,9 @@ seatSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "SeatType"
     },
-    tripId: {
+    busId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Trip"
+        ref: "Bus"
     },
     IsFree: Boolean,
     isDeleted: Boolean
