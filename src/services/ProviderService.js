@@ -21,7 +21,7 @@ const GetProvider = async (req, res) => {
     return await Provider.find({isDeleted: false});
 }
 
-const CreateProvider = async (req) => {
+const Register = async (req) => {
     var foundProvider = await Provider.findOne({ $or: [{ email: req.body.userName }, { phoneNumber: req.body.userName }], isDeleted: false });
     if (foundProvider != null) return {
         success: false,
@@ -116,7 +116,7 @@ const UpdateProvider = async (req) => {
 
 module.exports = {
     GetProvider,
-    CreateProvider,
+    Register,
     Login,
     UpdateProvider
 }
