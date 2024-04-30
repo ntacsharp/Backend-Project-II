@@ -29,6 +29,7 @@ const Login = async (req, res) => {
 
 const UpdateProvider = async (req, res) => {
     try {
+        console.log(req.body.info)
         const resp = await ProviderService.UpdateProvider(req);
         res.status(resp.code).json(resp);
     } catch (err) {

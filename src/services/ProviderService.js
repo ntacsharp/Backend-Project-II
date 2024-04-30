@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Provider = require("../models/Provider");
 const AuthService = require("./AuthService");
+const bcrypt = require('bcrypt');
 
 const GetProvider = async (req, res) => {
     // var resp = NhaXe.find()
@@ -58,7 +59,7 @@ const Login = async (req) => {
         code: 401
     };
     if (req.body.password != null) {
-        if (bcrypt.compare(req.body.password, foundProvider.passwordHarsh)) {
+        if (!bcrypt.compare(req.body.password, foundProvider.passwordHarsh)) {
             return {
                 success: false,
                 message: "Sai tài khoản hoặc mật khẩu",
@@ -82,7 +83,7 @@ const UpdateProvider = async (req) => {
     const updateFields = {};
     if (req.body.name) updateFields.name = req.body.name;
     if (req.body.address) updateFields.address = req.body.address;
-    const resp = ProviderModel.findOneAndUpdate(
+    const resp = Provider.findOneAndUpdate(
         { _id: providerId, isDeleted: false },
         { $set: updateFields },
         { new: true }
