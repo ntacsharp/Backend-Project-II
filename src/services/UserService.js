@@ -4,7 +4,7 @@ const AuthService = require("./AuthService");
 const bcrypt = require('bcrypt');
 
 const Login = async (req) => {
-    var foundUser = await User.findOne({ $or: [{ email: req.body.userName }, { phoneNumber: req.body.userName }] });
+    var foundUser = await User.findOne({ $or: [{ email: req.body.userName }, { phoneNumber: req.body.userName }], isDeleted: false });
     if (foundUser == null) return {
         success: false,
         message: "Không tồn tại người dùng",
@@ -31,7 +31,7 @@ const Login = async (req) => {
 }
 
 const Register = async (req) => {
-    var foundUser = await User.findOne({ $or: [{ email: req.body.email }, { phoneNumber: req.body.phoneNumber }] });
+    var foundUser = await User.findOne({ $or: [{ email: req.body.email }, { phoneNumber: req.body.phoneNumber }], isDeleted: false });
     if (foundUser != null) return {
         success: false,
         message: "Đã tồn tại người dùng",

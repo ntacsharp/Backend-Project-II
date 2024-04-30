@@ -7,3 +7,5 @@ router.get("/:id", authMiddleware, BusController.GetBusById);
 router.get("/types", BusController.GetBusTypes);
 router.post("/", authMiddleware, BusController.CreateBus);
 router.delete("/:id", authMiddleware, BusController.DeleteBus);
+
+module.exports = router;

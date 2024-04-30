@@ -6,7 +6,7 @@ const Trip = require("../models/Trip");
 const GetSeats = async (req) => {
     const id = req.params.id;
     const trip = Trip.findOne({ _id: id });
-    const resp = Seat.find({ busId: trip.busId })
+    const resp = Seat.find({ busId: trip.busId, isDeleted: false })
         .then((allSeats) => {
             allSeats.array.forEach((seat) => {
                 const seatType = SeatType.findOne({ _id: seat.seatTypeId });

@@ -2,7 +2,7 @@ const PickupPoint = require("../models/PickupPoint");
 
 const GetPickupPoints = async (req) => {
     const id = req.params.id;
-    const pickupPoints = PickupPoint.find({tripId: id});
+    const pickupPoints = PickupPoint.find({tripId: id, isDeleted: false});
     return resp = {
         success: true,
         code: 200,

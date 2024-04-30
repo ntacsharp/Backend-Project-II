@@ -6,6 +6,7 @@ const GetTrips = async (req) => {
     var allTrips = await Trip.find({
         departureProvinceId: req.body.departureProvinceId,
         arrivalProvinceId: req.body.arrivalProvinceId,
+        isDeleted: false
     });
     if(req.body.departureTime) allTrips = allTrips.filter(a => a.departureTime.toLocaleDateString() == req.departureTime.toLocaleDateString());
     if(req.body.arrivalTime) allTrips = allTrips.filter(a => a.arrivalTime.toLocaleDateString() == req.arrivalTime.toLocaleDateString());

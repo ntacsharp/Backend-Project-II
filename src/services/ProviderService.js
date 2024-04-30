@@ -18,11 +18,11 @@ const GetProvider = async (req, res) => {
     //                 };
     //             });
     // return resp;
-    return await Provider.find();
+    return await Provider.find({isDeleted: false});
 }
 
 const CreateProvider = async (req) => {
-    var foundProvider = await Provider.findOne({ $or: [{ email: req.body.userName }, { phoneNumber: req.body.userName }] });
+    var foundProvider = await Provider.findOne({ $or: [{ email: req.body.userName }, { phoneNumber: req.body.userName }], isDeleted: false });
     if (foundProvider != null) return {
         success: false,
         message: "Đã tồn tại nhà xe",
@@ -35,7 +35,7 @@ const CreateProvider = async (req) => {
         address: req.body.address,
         passwordHarsh: await AuthService.hashPassword(req.body.password),
         isDeleted: false,
-        isVerified: false
+        isVerified: true
     });
     Provider.create(newProvider);
     return {
@@ -46,7 +46,7 @@ const CreateProvider = async (req) => {
 }
 
 const Login = async (req) => {
-    var foundProvider = await Provider.findOne({ $or: [{ email: req.body.userName }, { phoneNumber: req.body.userName }] });
+    var foundProvider = await Provider.findOne({ $or: [{ email: req.body.userName }, { phoneNumber: req.body.userName }], isDeleted: false });
     if (foundProvider == null) return {
         success: false,
         message: "Không tồn tại nhà xe",
@@ -83,7 +83,7 @@ const UpdateProvider = async (req) => {
     if (req.body.name) updateFields.name = req.body.name;
     if (req.body.address) updateFields.address = req.body.address;
     const resp = ProviderModel.findOneAndUpdate(
-        { _id: providerId },
+        { _id: providerId, isDeleted: false },
         { $set: updateFields },
         { new: true }
     )
