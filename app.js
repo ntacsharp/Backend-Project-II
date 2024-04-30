@@ -31,11 +31,13 @@ connectToMongo();
 const provinceRouter = require("./src/routers/ProvinceRouter");
 const tripRouter = require("./src/routers/TripRouter");
 const userRouter = require("./src/routers/UserRouter");
+const busRouter = require("./src/routers/BusRouter");
 
 //routes
 app.use("/api/province", provinceRouter);
 app.use("/api/trips", tripRouter);
 app.use("/api/user", userRouter);
+app.use("/api/bus", busRouter);
 
 
 app.get('/', (req, res) => {

@@ -14,12 +14,14 @@ const GetSeats = async (req) => {
             });
             return resp = {
                 success: true,
+                code: 200,
                 items: allSeats
             };
         })
         .catch((err) => {
             return resp = {
                 success: false,
+                code: 500,
                 errMsg: err.message
             };
         });

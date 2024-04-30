@@ -5,6 +5,7 @@ const GetPickupPoints = async (req) => {
     const pickupPoints = PickupPoint.find({tripId: id});
     return resp = {
         success: true,
+        code: 200,
         items: pickupPoints
     };
 }

@@ -7,13 +7,15 @@ const GetProvince = async () => {
         .then((allProvince) => {
             return resp = {
                 success: true,
-                items: allProvince
+                items: allProvince,
+                code: 200
             };
         })
         .catch((err) => {
             return resp = {
                 success: false,
-                errMsg: err.message
+                errMsg: err.message,
+                code: 500
             };
         });
     return resp;

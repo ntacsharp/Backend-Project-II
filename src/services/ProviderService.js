@@ -26,6 +26,7 @@ const CreateProvider = async (req) => {
     if (foundProvider != null) return {
         success: false,
         message: "Đã tồn tại nhà xe",
+        code: 400
     };
     const newProvider = new Provider({
         name: req.body.name,
@@ -40,6 +41,7 @@ const CreateProvider = async (req) => {
     return {
         success: true,
         message: "Đã tạo nhà xe thành công",
+        code: 200
     };
 }
 
@@ -48,22 +50,26 @@ const Login = async (req) => {
     if (foundProvider == null) return {
         success: false,
         message: "Không tồn tại nhà xe",
+        code: 401
     };
     if (foundProvider.isVerified == false) return {
         success: false,
         message: "Nhà xe chưa được xác nhận",
+        code: 401
     };
     if (req.body.password != null) {
         if (bcrypt.compare(req.body.password, foundProvider.passwordHarsh)) {
             return {
                 success: false,
                 message: "Sai tài khoản hoặc mật khẩu",
+                code: 401
             };
         }
         else {
             return {
                 success: true,
                 message: "Đăng nhập thành công",
+                code: 200,
                 token: AuthService.generateToken(foundProvider._id)
             };
         }
@@ -84,11 +90,16 @@ const UpdateProvider = async (req) => {
         .exec()
         .then(updatedProvider => {
             if (updatedProvider) {
-                return updatedProvider
-
+                return {
+                    success: true,
+                    errMsg: 'Successfully updated provider',
+                    code: 200,
+                    item: updatedProvider
+                }
             } else {
                 return {
                     success: false,
+                    code: 401,
                     errMsg: 'Provider not found'
                 };
             }
@@ -96,6 +107,7 @@ const UpdateProvider = async (req) => {
         .catch(err => {
             return {
                 success: false,
+                code: 500,
                 errMsg: err.message
             };
         });

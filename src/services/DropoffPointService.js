@@ -5,6 +5,7 @@ const GetDropoffPoints = async (req) => {
     const dropoffPoints = DropoffPoint.find({tripId: id});
     return resp = {
         success: true,
+        code: 200,
         items: dropoffPoints
     };
 }

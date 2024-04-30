@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Trip = require("../models/Trip");
+const Bus = require("../models/Bus");
 
 const GetTrips = async (req) => {
     var allTrips = await Trip.find({
@@ -12,6 +13,16 @@ const GetTrips = async (req) => {
         success: true,
         items: allTrips
     };
+}
+
+const CreateTrip = async (req) => {
+    var foundBus = await Bus.findOne({_id: req.body.busId});
+    if(!foundBus){
+        return {
+            success: false,
+            message: "Không tồn tại xe buýt",
+        };
+    }
 }
 
 module.exports = {
