@@ -79,6 +79,12 @@ http://localhost:4000/api/bus
 body: {
     "plateNumber": String,
     "busTypeId": String, (reference cho bus type)
+    "seatTypeList": Array(seat)
+}
+seat: {
+    "type": String,
+    "price": Number,
+    "amount": Number
 }
 
 Xóa 1 xe khỏi danh sách: delete (có yêu cầu bearer token)

@@ -1,8 +1,7 @@
 const Bus = require("../models/Bus");
 const BusType = require("../models/BusType");
 const Provider = require("../models/Provider");
-const Seat = require("../models/Seat");
-const SeatType = require("../models/SeatType");
+const SeatService = require("./SeatService");
 
 const GetBusTypes = async (req) => {
     var resp = await BusType.find({ isDeleted: false })
@@ -55,11 +54,11 @@ const CreateBus = async (req) => {
         busTypeId: foundType._id,
         isDeleted: false
     });
-    const resp = Bus.create(newBus)
-        .then((bus) => {
-            console.log(bus);
-            return bus;
-        });
+    const resp = await Bus.create(newBus);
+    for(var i = 0; i < req.body.seatTypeList.length; i++){
+        const item = req.body.seatTypeList[i];
+        await SeatService.CreateSeatType(item.type, item.price, item.amount, resp._id);
+    }
     return {
         success: true,
         message: "Successfully added bus",
@@ -78,7 +77,7 @@ const DeleteBus = async (req) => {
             code: 403
         }
     }
-    const resp = Bus.findOneAndUpdate(
+    const resp = await Bus.findOneAndUpdate(
         { _id: req.params.id, isDeleted: false },
         {
             $set: {

@@ -9,7 +9,6 @@ seatSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Bus"
     },
-    IsFree: Boolean,
     isDeleted: Boolean
 })
 

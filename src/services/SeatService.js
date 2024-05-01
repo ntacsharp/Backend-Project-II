@@ -28,6 +28,26 @@ const GetSeats = async (req) => {
     return resp;
 }
 
+const CreateSeatType = async (type, price, amount, busId) => {
+    var newSeatType = new SeatType({
+        type: type,
+        busId: busId,
+        price: price,
+        isDeleted: false
+    });
+    const resp = await SeatType.create(newSeatType);
+    for (var i = 0; i < amount; i++) {
+        const newSeat = new Seat({
+            seatTypeId: newSeatType._id,
+            busId: busId,
+            isDeleted: false
+        });
+        await Seat.create(newSeat);
+    }
+    return resp;
+}
+
 module.exports = {
-    GetSeats
+    GetSeats,
+    CreateSeatType
 }
