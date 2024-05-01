@@ -5,17 +5,19 @@ const Seat = require("../models/Seat");
 const SeatType = require("../models/SeatType");
 
 const GetBusTypes = async (req) => {
-    var resp = BusType.find({ isDeleted: false })
+    var resp = await BusType.find({ isDeleted: false })
         .then((allTypes) => {
             return resp = {
                 success: true,
-                items: allTypes
+                items: allTypes,
+                code: 200
             };
         })
         .catch((err) => {
             return resp = {
                 success: false,
-                errMsg: err.message
+                errMsg: err.message,
+                code: 500
             };
         });
     return resp;
@@ -23,7 +25,7 @@ const GetBusTypes = async (req) => {
 
 const CreateBus = async (req) => {
     const id = req.body.info.id;
-    var foundProvider = Provider.findOne({ _id: id, isDeleted: false });
+    var foundProvider = await Provider.findOne({ _id: id, isDeleted: false });
     if (!foundProvider) {
         return {
             success: false,
@@ -31,7 +33,7 @@ const CreateBus = async (req) => {
             code: 403
         }
     }
-    var foundBus = Bus.findOne({ plateNumber: req.body.plateNumber, isDeleted: false });
+    var foundBus = await Bus.findOne({ plateNumber: req.body.plateNumber, isDeleted: false });
     if (foundBus) {
         return {
             success: false,
@@ -39,7 +41,7 @@ const CreateBus = async (req) => {
             code: 400
         }
     }
-    var foundType = BusType.findOne({ _id: req.body.busTypeId, isDeleted: false });
+    var foundType = await BusType.findOne({ _id: req.body.busTypeId, isDeleted: false });
     if (!foundType) {
         return {
             success: false,
@@ -68,7 +70,7 @@ const CreateBus = async (req) => {
 
 const DeleteBus = async (req) => {
     const id = req.body.info.id;
-    var foundProvider = Provider.findOne({ _id: id, isDeleted: false });
+    var foundProvider = await Provider.findOne({ _id: id, isDeleted: false });
     if (!foundProvider) {
         return {
             success: false,
@@ -114,7 +116,7 @@ const DeleteBus = async (req) => {
 
 const GetBuses = async (req) => {
     const id = req.body.info.id;
-    var foundProvider = Provider.findOne({ _id: id, isDeleted: false });
+    var foundProvider = await Provider.findOne({ _id: id, isDeleted: false });
     if (!foundProvider) {
         return {
             success: false,
@@ -122,7 +124,7 @@ const GetBuses = async (req) => {
             code: 403
         }
     }
-    var resp = Bus.find({
+    var resp = await Bus.find({
         providerId: id, isDeleted: false
     })
         .then((allBuses) => {
@@ -144,7 +146,7 @@ const GetBuses = async (req) => {
 
 const GetBusById = async (req) => {
     const id = req.body.info.id;
-    var foundProvider = Provider.findOne({ _id: id, isDeleted: false });
+    var foundProvider = await Provider.findOne({ _id: id, isDeleted: false });
     if (!foundProvider) {
         return {
             success: false,
@@ -152,7 +154,7 @@ const GetBusById = async (req) => {
             code: 403
         }
     }
-    var resp = Bus.findOne({
+    var resp = await Bus.findOne({
         providerId: id,
         _id: req.params.id,
         isDeleted: false

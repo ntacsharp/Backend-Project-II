@@ -1,7 +1,7 @@
 const ProvinceModel = require("../models/Province");
 
 const GetProvince = async () => {
-    var resp = ProvinceModel.find({
+    var resp = await ProvinceModel.find({
         // _id: "66181298626da1c3fbe71a5f"
         isDeleted: false
     }, "_id name")

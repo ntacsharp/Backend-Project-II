@@ -83,7 +83,7 @@ const UpdateProvider = async (req) => {
     const updateFields = {};
     if (req.body.name) updateFields.name = req.body.name;
     if (req.body.address) updateFields.address = req.body.address;
-    const resp = Provider.findOneAndUpdate(
+    const resp = await Provider.findOneAndUpdate(
         { _id: providerId, isDeleted: false },
         { $set: updateFields },
         { new: true }
