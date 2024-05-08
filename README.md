@@ -1,6 +1,10 @@
 # Backend-Project-II-
 Backend cho Project II
 
+Cách chạy
+gõ "npm i" vào terminal
+sau đó gõ "npm run start" để chạy code
+
 Route
 
 Đăng nhập cho người dùng: post
@@ -79,7 +83,6 @@ http://localhost:4000/api/bus
 body: {
     "plateNumber": String,
     "busTypeId": String, (reference cho bus type)
-    "seatTypeList": Array(seat)
 }
 seat: {
     "type": String,

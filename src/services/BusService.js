@@ -55,10 +55,6 @@ const CreateBus = async (req) => {
         isDeleted: false
     });
     const resp = await Bus.create(newBus);
-    for(var i = 0; i < req.body.seatTypeList.length; i++){
-        const item = req.body.seatTypeList[i];
-        await SeatService.CreateSeatType(item.type, item.price, item.amount, resp._id);
-    }
     return {
         success: true,
         message: "Successfully added bus",
