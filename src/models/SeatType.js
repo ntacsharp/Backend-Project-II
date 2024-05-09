@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 
 seatTypeSchema = new mongoose.Schema({
-    busId: {
+    tripId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "BusType"
     },
-    type: String,
     price: Number,
+    setCount: Number,
     isDeleted: Boolean
 })
 

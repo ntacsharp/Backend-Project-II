@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const Seat = require("../models/Seat");
 const SeatType = require("../models/SeatType");
 const Trip = require("../models/Trip");
 
@@ -33,17 +32,10 @@ const CreateSeatType = async (type, price, amount, busId) => {
         type: type,
         busId: busId,
         price: price,
+        seatCount: amount,
         isDeleted: false
     });
     const resp = await SeatType.create(newSeatType);
-    for (var i = 0; i < amount; i++) {
-        const newSeat = new Seat({
-            seatTypeId: newSeatType._id,
-            busId: busId,
-            isDeleted: false
-        });
-        await Seat.create(newSeat);
-    }
     return resp;
 }
 

@@ -28,7 +28,7 @@ const CreateBus = async (req) => {
     if (!foundProvider) {
         return {
             success: false,
-            message: "Provider only function",
+            message: "Chức năng chỉ dành cho nhà xe",
             code: 403
         }
     }
@@ -36,7 +36,7 @@ const CreateBus = async (req) => {
     if (foundBus) {
         return {
             success: false,
-            message: "Bus with plate number " + req.body.plateNumber + " already existed",
+            message: "Đã tồn tại xe với biển số " + req.body.plateNumber,
             code: 400
         }
     }
@@ -44,7 +44,7 @@ const CreateBus = async (req) => {
     if (!foundType) {
         return {
             success: false,
-            message: "Invalid bus type",
+            message: "Loại xe không tồn tại",
             code: 400
         }
     }
@@ -57,7 +57,7 @@ const CreateBus = async (req) => {
     const resp = await Bus.create(newBus);
     return {
         success: true,
-        message: "Successfully added bus",
+        message: "Thêm xe buýt thành công",
         code: 200,
         item: resp
     };
@@ -69,7 +69,7 @@ const DeleteBus = async (req) => {
     if (!foundProvider) {
         return {
             success: false,
-            message: "Provider only function",
+            message: "Chức năng chỉ dành cho nhà xe",
             code: 403
         }
     }
@@ -87,14 +87,14 @@ const DeleteBus = async (req) => {
             if (updatedBus) {
                 return {
                     success: true,
-                    errMsg: 'Successfully deleted bus',
+                    errMsg: 'Xóa xe thành công',
                     code: 200,
                     item: updatedBus
                 }
             } else {
                 return {
                     success: false,
-                    errMsg: 'Invalid bus',
+                    errMsg: 'Xe không tồn tại',
                     code: 400
                 };
             }
@@ -115,7 +115,7 @@ const GetBuses = async (req) => {
     if (!foundProvider) {
         return {
             success: false,
-            message: "Provider only function",
+            message: "Chức năng chỉ dành cho nhà xe",
             code: 403
         }
     }
@@ -145,7 +145,7 @@ const GetBusById = async (req) => {
     if (!foundProvider) {
         return {
             success: false,
-            message: "Provider only function",
+            message: "Chức năng chỉ dành cho nhà xe",
             code: 403
         }
     }

@@ -31,7 +31,8 @@ http://localhost:4000/api/trips
 {
     "departureProvinceId": String,
     "arrivalProvinceId": String,
-    "departureTime": String | null
+    "departureTime": Date,
+    "arrivalTime" Date | undefined | null
 }
 
 
@@ -92,3 +93,16 @@ seat: {
 
 Xóa 1 xe khỏi danh sách: delete (có yêu cầu bearer token)
 http://localhost:4000/api/bus/:id
+
+Lấy ra thông tin của nhà xe hiện tại: get (có yêu cầu bearer token)
+http://localhost:4000/api/provider
+
+Thêm 1 chuyến xe: post (có yêu cầu bearer token)
+http://localhost:4000/api/trips
+body: {
+    busId: String,
+    departureProvinceId: String,
+    arrivalProvinceId: String,
+    departureTime: Date,
+    arrivalTime: Date
+}

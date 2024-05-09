@@ -19,7 +19,7 @@ const GetSeats = async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     };
-}
+};
 
 const GetDropoffPoints = async (req, res) => {
     try {
@@ -28,11 +28,20 @@ const GetDropoffPoints = async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     };
-}
+};
 
 const GetPickupPoints = async (req, res) => {
     try {
         const resp = await PickupPointService.GetPickupPoints(req);
+        res.status(resp.code).json(resp);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    };
+};
+
+const CreateTrip = async (req, res) => {
+    try {
+        const resp = await TripService.CreateTrip(req);
         res.status(resp.code).json(resp);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -43,5 +52,6 @@ module.exports = {
     GetTrips,
     GetSeats,
     GetDropoffPoints,
-    GetPickupPoints
+    GetPickupPoints,
+    CreateTrip
 }

@@ -2,7 +2,7 @@ const ProviderService = require("../services/ProviderService");
 
 const GetProvider = async (req, res) => {
     try {
-        const resp = await ProviderService.GetProvider();
+        const resp = await ProviderService.GetProvider(req);
         res.status(resp.code).json(resp);
     } catch (err) {
         res.status(500).json({ error: err.message });

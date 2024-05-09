@@ -5,6 +5,6 @@ const authMiddleware = require('../middlewares/AuthMiddleware');
 router.post("/login", ProviderController.Login);
 router.post("/register", ProviderController.Register);
 router.patch("/", authMiddleware, ProviderController.UpdateProvider);
-router.get("/", ProviderController.GetProvider);
+router.get("/", authMiddleware, ProviderController.GetProvider);
 
 module.exports = router;

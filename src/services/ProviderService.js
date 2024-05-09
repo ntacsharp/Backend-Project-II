@@ -3,23 +3,20 @@ const Provider = require("../models/Provider");
 const AuthService = require("./AuthService");
 const bcrypt = require('bcrypt');
 
-const GetProvider = async (req, res) => {
-    // var resp = NhaXe.find()
-    //             .select('id ten sdt email diachi')
-    //             .then((allProvider) => {
-    //                 return resp = {
-    //                     success: true,
-    //                     items: allProvider
-    //                 };
-    //             })
-    //             .catch((err) => {
-    //                 return resp = {
-    //                     success: false,
-    //                     errMsg: err.message
-    //                 };
-    //             });
-    // return resp;
-    return await Provider.find({isDeleted: false});
+const GetProvider = async (req) => {
+    const id = req.body.info.id;
+    var foundProvider = await Provider.findOne({ _id: id, isDeleted: false }, "name phoneNumber email address");
+    if (foundProvider == null) return {
+        success: false,
+        message: "Nhà xe không tồn tại",
+        code: 400
+    };
+    return {
+        success: true,
+        message: "Thành công",
+        code: 200,
+        item: foundProvider
+    }
 }
 
 const Register = async (req) => {
