@@ -20,7 +20,7 @@ const GetProvider = async (req) => {
 }
 
 const Register = async (req) => {
-    var foundProvider = await Provider.findOne({ $or: [{ email: req.body.userName }, { phoneNumber: req.body.userName }], isDeleted: false });
+    var foundProvider = await Provider.findOne({ $or: [{ email: req.body.email }, { phoneNumber: req.body.phoneNumber }], isDeleted: false });
     if (foundProvider != null) return {
         success: false,
         message: "Đã tồn tại nhà xe",

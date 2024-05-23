@@ -1,25 +1,19 @@
 const Bus = require("../models/Bus");
 const BusType = require("../models/BusType");
 const Provider = require("../models/Provider");
+const BrandService = require("./BrandService");
 const SeatService = require("./SeatService");
 
 const GetBusTypes = async (req) => {
-    var resp = await BusType.find({ isDeleted: false })
-        .then((allTypes) => {
-            return resp = {
-                success: true,
-                items: allTypes,
-                code: 200
-            };
-        })
-        .catch((err) => {
-            return resp = {
-                success: false,
-                errMsg: err.message,
-                code: 500
-            };
-        });
-    return resp;
+    var resp = await BusType.find({ isDeleted: false });
+    resp.forEach((busType) => {
+        busType.brands = BrandService.GetBrands(busType.id);
+    });
+    return {
+        success: true,
+        items: resp,
+        code: 200
+    };
 }
 
 const CreateBus = async (req) => {

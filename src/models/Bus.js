@@ -6,14 +6,8 @@ busSchema = new mongoose.Schema({
         unique: true,
         required: true
     },
-    providerId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Provider"
-    },
-    busTypeId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "BusType"
-    },
+    providerId: String,
+    busTypeId: String,
     isDeleted: Boolean
 })
 

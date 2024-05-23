@@ -1,20 +1,11 @@
 const mongoose = require("mongoose");
 
 tripSchema = new mongoose.Schema({
-    busId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Bus"
-    },
+    busTypeId: String,
     departureTime: Date,
     arrivalTime: Date,
-    departureProvinceId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Province"
-    },
-    arrivalProvinceId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Province"
-    },
+    departureProvinceId: String,
+    arrivalProvinceId: String,
     isDeleted: Boolean
 })
 

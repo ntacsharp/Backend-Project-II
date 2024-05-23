@@ -1,11 +1,9 @@
 const mongoose = require("mongoose");
-
-pickupPointSchema = new mongoose.Schema({
+PickupPointSchema = new mongoose.Schema({
     place: String,
-    TripId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Trip"
-    }
+    tripId: String,
+    provinceId: String,
+    time: Date
 })
 
 module.exports = mongoose.model("PickupPoint", pickupPointSchema);

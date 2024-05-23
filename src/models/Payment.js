@@ -1,14 +1,8 @@
 const mongoose = require("mongoose");
 
 const paymentSchema = new mongoose.Schema({
-    ticketId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Trip"
-    },
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    },
+    ticketId: String,
+    userId: String,
     isPaid: Boolean,
     isDeleted: Boolean
 });

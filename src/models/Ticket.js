@@ -1,15 +1,11 @@
 const mongoose = require("mongoose");
 
 const ticketSchema = new mongoose.Schema({
-    tripId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Trip"
-    },
-    seatId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Seat"
-    },
-    totalPrice: Number,
+    tripId: String,
+    seatId: String,
+    price: Number,
+    date: Number,
+    createdTime: Number,
     isDeleted: Boolean
 });
 

@@ -3,6 +3,7 @@ const Trip = require("../models/Trip");
 const Bus = require("../models/Bus");
 const Province = require("../models/Province");
 const Provider = require("../models/Provider");
+const Utility = require("../models/Utility");
 
 const GetTrips = async (req) => {
     var allTrips = await Trip.find({

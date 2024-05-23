@@ -1,7 +1,5 @@
 const TripService = require("../services/TripService");
 const SeatService = require("../services/SeatService");
-const DropoffPointService = require("../services/DropoffPointService");
-const PickupPointService = require("../services/PickupPointService");
 
 const GetTrips = async (req, res) => {
     try {
@@ -20,25 +18,6 @@ const GetSeats = async (req, res) => {
         res.status(500).json({ error: err.message });
     };
 };
-
-const GetDropoffPoints = async (req, res) => {
-    try {
-        const resp = await DropoffPointService.GetDropoffPoints(req);
-        res.status(resp.code).json(resp);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    };
-};
-
-const GetPickupPoints = async (req, res) => {
-    try {
-        const resp = await PickupPointService.GetPickupPoints(req);
-        res.status(resp.code).json(resp);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    };
-};
-
 const CreateTrip = async (req, res) => {
     try {
         const resp = await TripService.CreateTrip(req);
@@ -51,7 +30,5 @@ const CreateTrip = async (req, res) => {
 module.exports = {
     GetTrips,
     GetSeats,
-    GetDropoffPoints,
-    GetPickupPoints,
     CreateTrip
 }
