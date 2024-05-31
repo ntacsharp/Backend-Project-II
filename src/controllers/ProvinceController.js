@@ -7,23 +7,18 @@ const GetProvince = async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     };
+};
 
-    // if(resp.success == true){
-    //     return res.status(200).json({
-    //         success: true,
-    //         message: "True",
-    //         items: resp.items
-    //     });
-    // }
-    // else {
-    //     return res.status(500).json({
-    //         success: false,
-    //         message: "False",
-    //         error: resp.errMsg
-    //     });
-    // }
+const GetStopPoint = async (req, res) => {
+    try {
+        const resp = await ProvinceService.GetStopPoint(req);
+        res.status(resp.code).json(resp);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    };
 };
 
 module.exports = {
-    GetProvince
+    GetProvince,
+    GetStopPoint
 }

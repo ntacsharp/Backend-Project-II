@@ -1,23 +1,22 @@
 const TripService = require("../services/TripService");
-const SeatService = require("../services/SeatService");
 
-const GetTrips = async (req, res) => {
-    try {
-        const resp = await TripService.GetTrips(req);
-        res.status(resp.code).json(resp);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    };
-};
+// const GetTrips = async (req, res) => {
+//     try {
+//         const resp = await TripService.GetTrips(req);
+//         res.status(resp.code).json(resp);
+//     } catch (err) {
+//         res.status(500).json({ error: err.message });
+//     };
+// };
 
-const GetSeats = async (req, res) => {
-    try {
-        const resp = await SeatService.GetSeats(req);
-        res.status(resp.code).json(resp);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    };
-};
+// const GetSeats = async (req, res) => {
+//     try {
+//         const resp = await SeatService.GetSeats(req);
+//         res.status(resp.code).json(resp);
+//     } catch (err) {
+//         res.status(500).json({ error: err.message });
+//     };
+// };
 const CreateTrip = async (req, res) => {
     try {
         const resp = await TripService.CreateTrip(req);
@@ -28,7 +27,7 @@ const CreateTrip = async (req, res) => {
 }
 
 module.exports = {
-    GetTrips,
-    GetSeats,
+    // GetTrips,
+    // GetSeats,
     CreateTrip
 }

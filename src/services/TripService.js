@@ -1,33 +1,33 @@
 const mongoose = require("mongoose");
 const Trip = require("../models/Trip");
-const Bus = require("../models/Bus");
-const Province = require("../models/Province");
 const Provider = require("../models/Provider");
 const Utility = require("../models/Utility");
+const TripStopPoint = require("../models/TripStopPoints");
+const BusType = require("../models/BusType");
 
-const GetTrips = async (req) => {
-    var allTrips = await Trip.find({
-        departureProvinceId: req.body.departureProvinceId,
-        arrivalProvinceId: req.body.arrivalProvinceId,
-        isDeleted: false
-    });
-    if (req.body.departureTime) {
-        allTrips = allTrips.filter(trip => {
-            const reqDepartureTime = new Date(req.body.departureTime);
-            return trip.departureTime.getTime() === reqDepartureTime.getTime();
-        });
-    }
-    if (req.body.arrivalTime){
-        allTrips = allTrips.filter(trip => {
-            const reqArrivalTime = new Date(req.body.arrivalTime);
-            return trip.arrivalTime.getTime() === reqArrivalTime.getTime();
-        });
-    }
-    return resp = {
-        success: true,
-        items: allTrips,
-        code: 200
-    };
+const GetTrip = async (req) => {
+    // var allTrips = await Trip.find({
+    //     departureProvinceId: req.body.departureProvinceId,
+    //     arrivalProvinceId: req.body.arrivalProvinceId,
+    //     isDeleted: false
+    // });
+    // if (req.body.departureTime) {
+    //     allTrips = allTrips.filter(trip => {
+    //         const reqDepartureTime = new Date(req.body.departureTime);
+    //         return trip.departureTime.getTime() === reqDepartureTime.getTime();
+    //     });
+    // }
+    // if (req.body.arrivalTime){
+    //     allTrips = allTrips.filter(trip => {
+    //         const reqArrivalTime = new Date(req.body.arrivalTime);
+    //         return trip.arrivalTime.getTime() === reqArrivalTime.getTime();
+    //     });
+    // }
+    // return resp = {
+    //     success: true,
+    //     items: allTrips,
+    //     code: 200
+    // };
 }
 
 const CreateTrip = async (req) => {
@@ -40,34 +40,25 @@ const CreateTrip = async (req) => {
             code: 403
         }
     }
-    var foundBus = await Bus.findOne({ _id: req.body.busId, providerId: id });
-    if (!foundBus) {
+    var foundType = await BusType.findOne({ _id: req.body.busTypeId, isDeleted: false });
+    if (!foundType) {
         return {
             success: false,
-            message: "Không tồn tại xe buýt",
-            code: 400
-        };
-    }
-    var foundDepartureProvince = await Province.findOne({ _id: req.body.departureProvinceId });
-    var foundArrivalProvince = await Province.findOne({ _id: req.body.arrivalProvinceId });
-    if (!foundArrivalProvince || !foundDepartureProvince) {
-        return {
-            success: false,
-            message: "Tỉnh không hợp lệ",
+            message: "Loại xe không tồn tại",
             code: 400
         }
     }
-    var dTime = new Date(req.body.departureTime);
-    var aTime = new Date(req.body.arrivalTime);
     const newTrip = new Trip({
-        busId: foundBus._id,
-        departureProvinceId: foundDepartureProvince._id,
-        arrivalProvinceId: foundArrivalProvince._id,
-        departureTime: dTime,
-        arrivalTime: aTime,
+        busTypeId: req.body.busTypeId,
+        providerId: id, 
         isDeleted: false
     });
     const trip = await Trip.create(newTrip);
+    // req.body.stopPoints.forEach((stopPoint) => {
+    //     const newTripStopPoint = new TripStopPoint({
+
+    //     })
+    // })
     return {
         success: true,
         message: "Thêm chuyến xe thành công",
@@ -77,6 +68,6 @@ const CreateTrip = async (req) => {
 }
 
 module.exports = {
-    GetTrips,
+    GetTrip,
     CreateTrip
 }

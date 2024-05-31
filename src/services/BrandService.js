@@ -1,7 +1,7 @@
 const Brand = require("../models/Brand");
 const BrandType = require("../models/BrandType");
 
-const GetBrands = async (typeId) => {
+const GetBrand = async (typeId) => {
     var resp = [];
     var brandTypes = await BrandType.find({busTypeId: typeId, isDeleted: false})
         .then((allTypes) => {
@@ -14,5 +14,5 @@ const GetBrands = async (typeId) => {
 }
 
 module.exports = {
-    GetBrands
+    GetBrand
 }

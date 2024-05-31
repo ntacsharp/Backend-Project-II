@@ -5,6 +5,7 @@ reviewSchema = new mongoose.Schema({
     userId: String,
     star: Number,
     comment: String,
+    isDeleted: Boolean
 })
 
 module.exports = mongoose.model("Review", reviewSchema);
