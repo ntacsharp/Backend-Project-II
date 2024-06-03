@@ -4,6 +4,7 @@ tripStopPointSchema = new mongoose.Schema({
     tripId: String,
     stopPointId: String,
     time: Date,
+    order: Number,
     isDeleted: Boolean
 })
 

@@ -5,10 +5,11 @@ const GetBrand = async (typeId) => {
     var resp = [];
     var brandTypes = await BrandType.find({busTypeId: typeId, isDeleted: false})
         .then((allTypes) => {
-            allTypes.forEach(async (type) => {
+            const tPromises = allTypes.map(async (type) => {
                 var brand = await Brand.findOne({_id: type._id});
                 resp.push(brand);
             });
+            Promise.all(tPromises);
         });
     return resp;
 }

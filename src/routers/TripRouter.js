@@ -4,8 +4,9 @@ const authMiddleware = require('../middlewares/AuthMiddleware');
 
 //router.get('/', ProvinceController.GetProvince);
 
-// router.get("/", GetTrips);
+router.get("/", TripController.GetTrip);
 // router.get("/seat/:id", GetSeats);
+router.get('/ultility', TripController.GetUtility);
 router.post("/", authMiddleware, TripController.CreateTrip);
 
 module.exports = router;

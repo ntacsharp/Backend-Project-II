@@ -36,7 +36,7 @@ const providerRouter = require("./src/routers/ProviderRouter");
 
 //routes
 app.use("/api/province", provinceRouter);
-app.use("/api/trips", tripRouter);
+app.use("/api/trip", tripRouter);
 app.use("/api/user", userRouter);
 app.use("/api/bus", busRouter);
 app.use("/api/provider", providerRouter);

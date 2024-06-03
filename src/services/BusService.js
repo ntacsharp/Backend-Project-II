@@ -6,9 +6,10 @@ const SeatService = require("./SeatService");
 
 const GetBusTypes = async (req) => {
     var resp = await BusType.find({ isDeleted: false });
-    resp.forEach((busType) => {
-        busType.brands = BrandService.GetBrands(busType.id);
+    var rPromises = resp.map(async (busType) => {
+        busType.brands = await BrandService.GetBrand(busType.id);
     });
+    Promise.all(rPromises);
     return {
         success: true,
         items: resp,
