@@ -8,6 +8,19 @@ const StopPoint = require("../models/StopPoint");
 const Province = require("../models/Province");
 const TripProvince = require("../models/TripProvince");
 
+function combineDateTime(dateString, date){
+    const date2 = new Date(dateString);
+    const combinedDateTime = new Date(
+        date2.getFullYear(),
+        date2.getMonth(),
+        date2.getDate(),
+        date.getHours(),
+        date.getMinutes(),
+        date.getSeconds()
+    );
+    return combinedDateTime;
+}
+
 const GetUtility = async () => {
     var resp = await Utility.find()
         .then((allUtility) => {
@@ -60,12 +73,35 @@ const GetTrip = async (req) => {
         const trip = await Trip.findOne({_id: tripId});
         const busType = await BusType.findOne({_id: trip.busTypeId});
         const provider = await Provider.findOne({_id: trip.providerId});
+        const tripStopPoints = await TripStopPoint.find({tripId: tripId, isDeleted: false});
+        var departurePoints = [], arrivalPoints = [];
+        const sptPromises = tripStopPoints.map(async (tsp) => {
+            const sp = await StopPoint.findOne({_id: tsp.stopPointId, isDeleted: false});
+            console.log(sp);
+            if(sp.provinceId == req.body.departureProvinceId){
+                var spDTO = {
+                    address: sp.name + " (" + sp.address + ")",
+                    time: combineDateTime(req.body.departureTime, tsp.time)
+                };
+                departurePoints.push(spDTO);
+            }
+            if(sp.provinceId == req.body.arrivalProvinceId){
+                var spDTO = {
+                    address: sp.name + " (" + sp.address + ")",
+                    time: combineDateTime(req.body.departureTime, tsp.time)
+                };
+                arrivalPoints.push(spDTO);
+            }
+        })
+        await Promise.all(sptPromises);
         const tripDTO = {
             id: trip._id,
             busType: busType.type,
             provider: provider.name,
             departureProvince: foundDepartureProvince.name,
             arrivalProvince: foundArrivalProvince.name,
+            departurePoints: departurePoints,
+            arrivalPoints: arrivalPoints
         };
         resp.push(tripDTO);
     });
@@ -106,16 +142,6 @@ const CreateTrip = async (req) => {
         }
     })
     Promise.all(spPromises);
-    // req.body.ultilities.forEach(async (utility) => {
-    //     var foundUtility = await Utility.findOne({ _id: utility.id });
-    //     if (!foundUtility) {
-    //         return {
-    //             success: false,
-    //             message: "Tiện ích không tồn tại",
-    //             code: 400
-    //         }
-    //     }
-    // })
     const newTrip = new Trip({
         busTypeId: req.body.busTypeId,
         providerId: id,
