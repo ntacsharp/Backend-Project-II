@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-TripUtilitySchema = new mongoose.Schema({
+tripUtilitySchema = new mongoose.Schema({
     tripId: String,
     utilityId: String,
     isDeleted: Boolean
