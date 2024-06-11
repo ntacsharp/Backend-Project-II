@@ -1,11 +1,16 @@
 const mongoose = require("mongoose");
 
 const ticketSchema = new mongoose.Schema({
+    userId: String,
     tripId: String,
-    seatId: String,
+    date: Date,
+    departurePointId: String,
+    arrivalPointId: String,
+    createdTime: Date,
     price: Number,
-    date: Number,
-    createdTime: Number,
+    seatCount: Number,
+    isPaid: Boolean,
+    isConfirmed: Boolean,
     isDeleted: Boolean
 });
 

@@ -8,27 +8,10 @@ const StopPoint = require("../models/StopPoint");
 const Province = require("../models/Province");
 const TripProvince = require("../models/TripProvince");
 const TripUtility = require("../models/TripUtility");
-
-function combineDateTime(dateString, date){
-    const date2 = new Date(dateString);
-    const combinedDateTime = new Date(
-        date2.getFullYear(),
-        date2.getMonth(),
-        date2.getDate(),
-        date.getHours(),
-        date.getMinutes(),
-        date.getSeconds()
-    );
-    return combinedDateTime;
-}
-
-function addHour(date, hour){
-    date.setHours(date.getHours() + hour);
-    return date;
-}
+const TimeService = require("./TimeService");
 
 const GetUtility = async () => {
-    var resp = await Utility.find({isDeleted: false})
+    var resp = await Utility.find({ isDeleted: false })
         .then((allUtility) => {
             return resp = {
                 success: true,
@@ -69,46 +52,66 @@ const GetTrip = async (req) => {
     if (foundDepartureTripProvince && foundDepartureTripProvince.length > 0) {
         const dtpPromises = foundDepartureTripProvince.map(async (dtp) => {
             const foundArrivalTripProvince = await TripProvince.findOne({ provinceId: req.body.arrivalProvinceId, tripId: dtp.tripId, order: { $gt: dtp.order }, isDeleted: false });
-            if(foundArrivalTripProvince){
+            if (foundArrivalTripProvince) {
                 allTripIds.push(dtp.tripId);
             }
         });
         await Promise.all(dtpPromises);
     }
     const tPromises = allTripIds.map(async (tripId) => {
-        const trip = await Trip.findOne({_id: tripId});
-        const busType = await BusType.findOne({_id: trip.busTypeId});
-        const provider = await Provider.findOne({_id: trip.providerId});
-        const tripStopPoints = await TripStopPoint.find({tripId: tripId, isDeleted: false});
-        var departurePoints = [], arrivalPoints = [];
-        const sptPromises = tripStopPoints.map(async (tsp) => {
-            const sp = await StopPoint.findOne({_id: tsp.stopPointId, isDeleted: false});
-            if(sp.provinceId == req.body.departureProvinceId){
-                var spDTO = {
-                    address: sp.name + " (" + sp.address + ")",
-                    time: combineDateTime(req.body.departureTime, tsp.time)
-                };
-                departurePoints.push(spDTO);
-            }
-            if(sp.provinceId == req.body.arrivalProvinceId){
-                var spDTO = {
-                    address: sp.name + " (" + sp.address + ")",
-                    time: combineDateTime(req.body.departureTime, tsp.time)
-                };
-                arrivalPoints.push(spDTO);
-            }
-        })
-        await Promise.all(sptPromises);
-        const tripDTO = {
-            id: trip._id,
-            busType: busType.type,
-            provider: provider.name,
-            departureProvince: foundDepartureProvince.name,
-            arrivalProvince: foundArrivalProvince.name,
-            departurePoints: departurePoints,
-            arrivalPoints: arrivalPoints
-        };
-        resp.push(tripDTO);
+        const trip = await Trip.findOne({ _id: tripId, isDeleted: false });
+        const busType = await BusType.findOne({ _id: trip.busTypeId, isDeleted: false });
+        const provider = await Provider.findOne({ _id: trip.providerId, isDeleted: false });
+        const tripStopPoints = await TripStopPoint.find({ tripId: tripId, isDeleted: false });
+        if (trip && busType && provider) {
+            var departurePoints = [], arrivalPoints = [];
+            const sptPromises = tripStopPoints.map(async (tsp) => {
+                const sp = await StopPoint.findOne({ _id: tsp.stopPointId, isDeleted: false });
+                if (sp.provinceId == req.body.departureProvinceId) {
+                    var spDTO = {
+                        id: tsp._id,
+                        address: sp.name + " (" + sp.address + ")",
+                        time: TimeService.combineDateTime(req.body.departureTime, tsp.time)
+                    };
+                    departurePoints.push(spDTO);
+                }
+                if (sp.provinceId == req.body.arrivalProvinceId) {
+                    var spDTO = {
+                        id: tsp._id,
+                        address: sp.name + " (" + sp.address + ")",
+                        time: TimeService.combineDateTime(req.body.departureTime, tsp.time)
+                    };
+                    arrivalPoints.push(spDTO);
+                }
+            })
+            await Promise.all(sptPromises);
+            const utilities = await TripUtility.find({ tripId: tripId, isDeleted: false });
+            const uList = [];
+            const uPromises = await utilities.map(async (utility) => {
+                const foundUtility = await Utility.findOne({ _id: utility.utilityId });
+                if (foundUtility) {
+                    var uDTO = {
+                        icon: foundUtility.icon,
+                        description: foundUtility.description,
+                        title: foundUtility.title,
+                    };
+                    uList.push(uDTO);
+                }
+            })
+            await Promise.all(uPromises);
+            const tripDTO = {
+                id: trip._id,
+                busType: busType.type,
+                provider: provider.name,
+                departureProvince: foundDepartureProvince.name,
+                arrivalProvince: foundArrivalProvince.name,
+                departurePoints: departurePoints,
+                arrivalPoints: arrivalPoints,
+                utilities: uList,
+                price: trip.price
+            };
+            resp.push(tripDTO);
+        }
     });
     await Promise.all(tPromises);
     return {
@@ -148,8 +151,8 @@ const CreateTrip = async (req) => {
     })
     Promise.all(spPromises);
     const uPromises = req.body.utilities.map(async (utilityId) => {
-        const foundUtility = await Utility.findOne({_id: utilityId, isDeleted: false});
-        if(!foundUtility){
+        const foundUtility = await Utility.findOne({ _id: utilityId, isDeleted: false });
+        if (!foundUtility) {
             return {
                 success: false,
                 message: "Tiện ích không tồn tại",
@@ -238,8 +241,8 @@ const CreateMultipleTrip = async (req) => {
     })
     Promise.all(spPromises);
     const uPromises = req.body.utilities.map(async (utilityId) => {
-        const foundUtility = await Utility.findOne({_id: utilityId, isDeleted: false});
-        if(!foundUtility){
+        const foundUtility = await Utility.findOne({ _id: utilityId, isDeleted: false });
+        if (!foundUtility) {
             return {
                 success: false,
                 message: "Tiện ích không tồn tại",
@@ -249,8 +252,8 @@ const CreateMultipleTrip = async (req) => {
     })
     Promise.all(uPromises);
     var tmp = new Date();
-    while(true){
-        if(tmp.getUTCHours() > 22){
+    while (true) {
+        if (tmp.getUTCHours() > 22) {
             break;
         }
         const newTrip = new Trip({
@@ -271,7 +274,7 @@ const CreateMultipleTrip = async (req) => {
                 order: stopPointOrder,
                 isDeleted: false
             });
-            stopPoint.time = addHour(tmp, 1);
+            stopPoint.time = TimeService.addHour(tmp, 1);
             stopPointOrder = stopPointOrder + 1;
             var foundPoint = await StopPoint.findOne({ _id: stopPoint.stopPointId, isDeleted: false });
             if (foundPoint.provinceId != lastProvinceId) {
@@ -305,9 +308,35 @@ const CreateMultipleTrip = async (req) => {
     };
 }
 
+function getRandomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+const AddPrice = async () => {
+    const providers = await Provider.find({ isDeleted: false });
+    const busTypes = await BusType.find({ isDeleted: false });
+    const promises = providers.map(async (provider) => {
+        const bPromises = busTypes.map(async (busType) => {
+            const price = getRandomNumber(300, 500);
+            const updateDocument = {
+                $set: { price: price }
+            };
+            const resp = await Trip.updateMany({providerId: provider._id, busTypeId: busType._id}, updateDocument);
+        })
+        await Promise.all(bPromises);
+    })
+    await Promise.all(promises);
+    return {
+        success: true,
+        message: "Thành công",
+        code: 200
+    };
+}
+
 module.exports = {
     GetUtility,
     GetTrip,
     CreateTrip,
-    CreateMultipleTrip
+    CreateMultipleTrip,
+    AddPrice
 }

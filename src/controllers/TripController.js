@@ -36,10 +36,20 @@ const CreateMultipleTrip = async (req, res) => {
     };
 }
 
+const AddPrice = async (req, res) => {
+    try {
+        const resp = await TripService.AddPrice();
+        res.status(resp.code).json(resp);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    };
+}
+
 module.exports = {
     GetUtility,
     GetTrip,
     // GetSeats,
     CreateTrip,
-    CreateMultipleTrip
+    CreateMultipleTrip,
+    AddPrice
 }

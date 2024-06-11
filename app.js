@@ -33,6 +33,7 @@ const tripRouter = require("./src/routers/TripRouter");
 const userRouter = require("./src/routers/UserRouter");
 const busRouter = require("./src/routers/BusRouter");
 const providerRouter = require("./src/routers/ProviderRouter");
+const ticketRouter = require("./src/routers/TicketRouter");
 
 //routes
 app.use("/api/province", provinceRouter);
@@ -40,6 +41,7 @@ app.use("/api/trip", tripRouter);
 app.use("/api/user", userRouter);
 app.use("/api/bus", busRouter);
 app.use("/api/provider", providerRouter);
+app.use("/api/ticket", ticketRouter);
 
 app.get('/', (req, res) => {
     res.status(200);

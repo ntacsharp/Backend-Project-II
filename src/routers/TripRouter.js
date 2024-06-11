@@ -8,6 +8,7 @@ router.get("/", TripController.GetTrip);
 // router.get("/seat/:id", GetSeats);
 router.get('/utility/', TripController.GetUtility);
 router.post("/", authMiddleware, TripController.CreateTrip);
-router.post("/multi/", authMiddleware, TripController.CreateMultipleTrip);
+// router.post("/multi/", authMiddleware, TripController.CreateMultipleTrip);
+// router.post("/price/", TripController.AddPrice);
 
 module.exports = router;
