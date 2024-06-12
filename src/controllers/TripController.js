@@ -54,6 +54,15 @@ const CancelTrip = async (req, res) => {
     };
 }
 
+const DeleteTrip = async (req, res) => {
+    try {
+        const resp = await TripService.DeleteTrip(req);
+        res.status(resp.code).json(resp);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    };
+}
+
 module.exports = {
     GetUtility,
     GetTrip,
@@ -61,5 +70,6 @@ module.exports = {
     CreateTrip,
     CreateMultipleTrip,
     AddPrice,
-    CancelTrip
+    CancelTrip,
+    DeleteTrip
 }

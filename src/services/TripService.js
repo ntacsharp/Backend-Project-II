@@ -322,7 +322,7 @@ const AddPrice = async () => {
         const bPromises = busTypes.map(async (busType) => {
             const price = getRandomNumber(3000, 5000);
             const updateDocument = {
-                $set: { price: price*100 }
+                $set: { price: price * 100 }
             };
             const resp = await Trip.updateMany({ providerId: provider._id, busTypeId: busType._id }, updateDocument);
         })
@@ -354,22 +354,67 @@ const CancelTrip = async (req) => {
             code: 400
         }
     }
-    const foundTickets = await Ticket.find({ tripId: req.body.tripId, date: req.body.date, isDeleted: false});
+    const foundTickets = await Ticket.find({ tripId: req.body.tripId, date: req.body.date, isDeleted: false });
     const promises = await foundTickets.map(async (ticket) => {
-        if(ticket.isPaid === true){
-            const user = await User.findOne({_id: ticket.userId});
+        if (ticket.isPaid === true) {
+            const user = await User.findOne({ _id: ticket.userId });
             const userUpdateDocument = {
                 $set: { balance: ticket.price + user.balance }
             };
-            await User.updateMany({_id: id}, userUpdateDocument);
+            await User.updateMany({ _id: ticket.userId }, userUpdateDocument);
             addEmailToQueue(user.email, "Email thông báo hủy chuyến xe", "Chuyến xe bạn đã mua vé đã bị hủy, tiền vé sẽ được hoàn trả vào tài khoản của bạn");
         }
         const updateDocument = {
             $set: { isDeleted: true }
         };
-        await Ticket.updateMany({_id: ticket._id}, updateDocument);
+        await Ticket.updateMany({ _id: ticket._id }, updateDocument);
     })
     await Promise.all(promises);
+    return {
+        success: true,
+        message: "Thành công",
+        code: 200
+    };
+}
+
+const DeleteTrip = async (req) => {
+    const id = req.body.info.id;
+    var foundProvider = await Provider.findOne({ _id: id, isDeleted: false });
+    if (!foundProvider) {
+        return {
+            success: false,
+            message: "Chức năng chỉ dành cho nhà xe",
+            code: 403
+        }
+    }
+    const foundTrip = await Trip.findOne({ _id: req.body.tripId, isDeleted: false });
+    if (!foundTrip) {
+        return {
+            success: false,
+            message: "Chuyến xe không tồn tại",
+            code: 400
+        }
+    }
+    const foundTickets = await Ticket.find({ tripId: req.body.tripId, date: { $gt: new Date() }, isDeleted: false });
+    const promises = foundTickets.map(async (ticket) => {
+        if (ticket.isPaid === true) {
+            const user = await User.findOne({ _id: ticket.userId });
+            const userUpdateDocument = {
+                $set: { balance: ticket.price + user.balance }
+            };
+            await User.updateMany({ _id: ticket.userId }, userUpdateDocument);
+            addEmailToQueue(user.email, "Email thông báo hủy chuyến xe", "Chuyến xe bạn đã mua vé đã bị hủy, tiền vé sẽ được hoàn trả vào tài khoản của bạn");
+        }
+        const updateDocument = {
+            $set: { isDeleted: true }
+        };
+        await Ticket.updateMany({ _id: ticket._id }, updateDocument);
+    })
+    await Promise.all(promises);
+    const updateDocument = {
+        $set: { isDeleted: true }
+    };
+    await Trip.updateMany({ _id: req.body.tripId }, updateDocument);
     return {
         success: true,
         message: "Thành công",
@@ -383,5 +428,6 @@ module.exports = {
     CreateTrip,
     CreateMultipleTrip,
     AddPrice,
-    CancelTrip
+    CancelTrip,
+    DeleteTrip
 }

@@ -11,5 +11,6 @@ router.post("/", authMiddleware, TripController.CreateTrip);
 router.post("/multi/", authMiddleware, TripController.CreateMultipleTrip);
 router.post("/price/", TripController.AddPrice);
 router.patch("/cancel", authMiddleware, TripController.CancelTrip);
+router.delete("/", authMiddleware, TripController.DeleteTrip);
 
 module.exports = router;
