@@ -9,7 +9,7 @@ const GetBusTypes = async (req) => {
     var rPromises = resp.map(async (busType) => {
         busType.brands = await BrandService.GetBrand(busType.id);
     });
-    Promise.all(rPromises);
+    await Promise.all(rPromises);
     return {
         success: true,
         items: resp,

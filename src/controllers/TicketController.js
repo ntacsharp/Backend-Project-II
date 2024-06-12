@@ -36,9 +36,19 @@ const PayTicket = async (req, res) => {
     };
 }
 
+const DeleteTicket = async (req, res) => {
+    try {
+        const resp = await TicketService.DeleteTicket(req);
+        res.status(resp.code).json(resp);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    };
+}
+
 module.exports = {
     CreateTicket,
     GetTicket,
     ConfirmTicket,
-    PayTicket
+    PayTicket,
+    DeleteTicket
 }

@@ -9,6 +9,7 @@ const providerSchema = new mongoose.Schema({
         required: false
     },
     passwordHarsh: String,
+    balance: Number,
     isDeleted: Boolean,
     isVerified: Boolean
 });

@@ -52,7 +52,29 @@ const Register = async (req) => {
     };
 }
 
+const AddBalance = async (req) => {
+    const id = req.body.info.id;
+    var foundUser = await User.findOne({ _id: id });
+    if (!foundUser) {
+        return {
+            success: false,
+            message: "Chưa đăng nhập",
+            code: 401
+        }
+    }
+    const userUpdateDocument = {
+        $set: { balance: Number(foundUser.balance) + req.body.amount }
+    }
+    await User.updateMany({_id: id}, userUpdateDocument);
+    return {
+        success: true,
+        message: "Nạp tiền thành công",
+        code: 200
+    };
+}
+
 module.exports = {
     Login,
-    Register
+    Register,
+    AddBalance
 }

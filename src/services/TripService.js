@@ -9,6 +9,9 @@ const Province = require("../models/Province");
 const TripProvince = require("../models/TripProvince");
 const TripUtility = require("../models/TripUtility");
 const TimeService = require("./TimeService");
+const Ticket = require("../models/Ticket");
+const addEmailToQueue = require("../services/EmailService");
+const User = require("../models/User");
 
 const GetUtility = async () => {
     var resp = await Utility.find({ isDeleted: false })
@@ -149,7 +152,7 @@ const CreateTrip = async (req) => {
             }
         }
     })
-    Promise.all(spPromises);
+    await Promise.all(spPromises);
     const uPromises = req.body.utilities.map(async (utilityId) => {
         const foundUtility = await Utility.findOne({ _id: utilityId, isDeleted: false });
         if (!foundUtility) {
@@ -160,7 +163,7 @@ const CreateTrip = async (req) => {
             }
         }
     })
-    Promise.all(uPromises);
+    await Promise.all(uPromises);
     const newTrip = new Trip({
         busTypeId: req.body.busTypeId,
         providerId: id,
@@ -193,7 +196,7 @@ const CreateTrip = async (req) => {
         }
         await TripStopPoint.create(newTripStopPoint);
     })
-    Promise.all(nspPromises);
+    await Promise.all(nspPromises);
     const nuPromises = req.body.utilities.map(async (utilityId) => {
         const newTripUtility = new TripUtility({
             tripId: trip._id,
@@ -202,7 +205,7 @@ const CreateTrip = async (req) => {
         });
         await TripUtility.create(newTripUtility);
     })
-    Promise.all(nuPromises);
+    await Promise.all(nuPromises);
     return {
         success: true,
         message: "Thêm chuyến xe thành công",
@@ -239,7 +242,7 @@ const CreateMultipleTrip = async (req) => {
             }
         }
     })
-    Promise.all(spPromises);
+    await Promise.all(spPromises);
     const uPromises = req.body.utilities.map(async (utilityId) => {
         const foundUtility = await Utility.findOne({ _id: utilityId, isDeleted: false });
         if (!foundUtility) {
@@ -250,7 +253,7 @@ const CreateMultipleTrip = async (req) => {
             }
         }
     })
-    Promise.all(uPromises);
+    await Promise.all(uPromises);
     var tmp = new Date();
     while (true) {
         if (tmp.getUTCHours() > 22) {
@@ -290,7 +293,7 @@ const CreateMultipleTrip = async (req) => {
             }
             await TripStopPoint.create(newTripStopPoint);
         })
-        Promise.all(nspPromises);
+        await Promise.all(nspPromises);
         const nuPromises = req.body.utilities.map(async (utilityId) => {
             const newTripUtility = new TripUtility({
                 tripId: trip._id,
@@ -299,7 +302,7 @@ const CreateMultipleTrip = async (req) => {
             });
             await TripUtility.create(newTripUtility);
         })
-        Promise.all(nuPromises);
+        await Promise.all(nuPromises);
     }
     return {
         success: true,
@@ -317,13 +320,54 @@ const AddPrice = async () => {
     const busTypes = await BusType.find({ isDeleted: false });
     const promises = providers.map(async (provider) => {
         const bPromises = busTypes.map(async (busType) => {
-            const price = getRandomNumber(300, 500);
+            const price = getRandomNumber(3000, 5000);
             const updateDocument = {
-                $set: { price: price }
+                $set: { price: price*100 }
             };
-            const resp = await Trip.updateMany({providerId: provider._id, busTypeId: busType._id}, updateDocument);
+            const resp = await Trip.updateMany({ providerId: provider._id, busTypeId: busType._id }, updateDocument);
         })
         await Promise.all(bPromises);
+    })
+    await Promise.all(promises);
+    return {
+        success: true,
+        message: "Thành công",
+        code: 200
+    };
+}
+
+const CancelTrip = async (req) => {
+    const id = req.body.info.id;
+    var foundProvider = await Provider.findOne({ _id: id, isDeleted: false });
+    if (!foundProvider) {
+        return {
+            success: false,
+            message: "Chức năng chỉ dành cho nhà xe",
+            code: 403
+        }
+    }
+    const foundTrip = await Trip.findOne({ _id: req.body.tripId, isDeleted: false });
+    if (!foundTrip) {
+        return {
+            success: false,
+            message: "Chuyến xe không tồn tại",
+            code: 400
+        }
+    }
+    const foundTickets = await Ticket.find({ tripId: req.body.tripId, date: req.body.date, isDeleted: false});
+    const promises = await foundTickets.map(async (ticket) => {
+        if(ticket.isPaid === true){
+            const user = await User.findOne({_id: ticket.userId});
+            const userUpdateDocument = {
+                $set: { balance: ticket.price + user.balance }
+            };
+            await User.updateMany({_id: id}, userUpdateDocument);
+            addEmailToQueue(user.email, "Email thông báo hủy chuyến xe", "Chuyến xe bạn đã mua vé đã bị hủy, tiền vé sẽ được hoàn trả vào tài khoản của bạn");
+        }
+        const updateDocument = {
+            $set: { isDeleted: true }
+        };
+        await Ticket.updateMany({_id: ticket._id}, updateDocument);
     })
     await Promise.all(promises);
     return {
@@ -338,5 +382,6 @@ module.exports = {
     GetTrip,
     CreateTrip,
     CreateMultipleTrip,
-    AddPrice
+    AddPrice,
+    CancelTrip
 }

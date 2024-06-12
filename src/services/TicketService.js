@@ -26,15 +26,16 @@ const CreateTicket = async (req) => {
             code: 400
         }
     }
-    const foundTickets = await Ticket.find({tripId: req.body.tripId, date: req.body.date, isDeleted: false, isConfirmed: true});
-    const busType = await BusType.findOne({_id: foundTrip.busTypeId, isDeleted: false});
-    if(!foundTickets) foundTickets = [];
-    if(busType){
+    const current = new Date();
+    const foundTickets = await Ticket.find({ tripId: req.body.tripId, date: req.body.date, isDeleted: false, isConfirmed: true });
+    const busType = await BusType.findOne({ _id: foundTrip.busTypeId, isDeleted: false });
+    if (!foundTickets) foundTickets = [];
+    if (busType) {
         var cnt = 0;
         foundTickets.map((foundTicket) => {
             cnt += foundTicket.seatCount;
         })
-        if(cnt + req.body.seatCount <= busType.seatCount){
+        if (cnt + req.body.seatCount <= busType.seatCount) {
             const newTicket = new Ticket({
                 userId: id,
                 tripId: req.body.tripId,
@@ -48,6 +49,13 @@ const CreateTicket = async (req) => {
                 isConfirmed: false,
                 isDeleted: false
             });
+            if (current.getDate() > newTicket.date.getDate()) {
+                return {
+                    success: false,
+                    message: "Ngày đi không hợp lệ",
+                    code: 400
+                }
+            }
             const ticket = await Ticket.create(newTicket);
             return {
                 success: true,
@@ -56,7 +64,7 @@ const CreateTicket = async (req) => {
                 code: 200
             };
         }
-        else{
+        else {
             return {
                 success: false,
                 message: "Xe không còn đủ ghế trống",
@@ -64,7 +72,7 @@ const CreateTicket = async (req) => {
             };
         }
     }
-    else{
+    else {
         return {
             success: false,
             message: "Không hợp lệ",
@@ -83,14 +91,14 @@ const GetTicket = async (req) => {
             code: 401
         }
     }
-    const foundTickets = await Ticket.find({userId: id, isDeleted: false});
+    const foundTickets = await Ticket.find({ userId: id, isDeleted: false });
     const ticketList = [];
     const tPromises = foundTickets.map(async (ticket) => {
-        const tripDeparturePoint = await TripStopPoint.findOne({_id: ticket.departurePointId, isDeleted: false});
-        const tripArrivalPoint = await TripStopPoint.findOne({_id: ticket.arrivalPointId, isDeleted: false});
-        const departurePoint = await StopPoint.findOne({_id: tripDeparturePoint.stopPointId, isDeleted: false});
-        const arrivalPoint = await StopPoint.findOne({_id: tripArrivalPoint.stopPointId, isDeleted: false});
-        const trip = await Trip.findOne({_id: ticket.tripId, isDeleted: false});
+        const tripDeparturePoint = await TripStopPoint.findOne({ _id: ticket.departurePointId, isDeleted: false });
+        const tripArrivalPoint = await TripStopPoint.findOne({ _id: ticket.arrivalPointId, isDeleted: false });
+        const departurePoint = await StopPoint.findOne({ _id: tripDeparturePoint.stopPointId, isDeleted: false });
+        const arrivalPoint = await StopPoint.findOne({ _id: tripArrivalPoint.stopPointId, isDeleted: false });
+        const trip = await Trip.findOne({ _id: ticket.tripId, isDeleted: false });
         const ticketDTO = {
             id: ticket._id,
             tripId: trip._id,
@@ -141,7 +149,7 @@ const ConfirmTicket = async (req) => {
     const updateDocument = {
         $set: { isConfirmed: true }
     };
-    const resp = await Ticket.updateMany({_id: req.body.ticketId, isDeleted: false}, updateDocument);
+    const resp = await Ticket.updateMany({ _id: req.body.ticketId, isDeleted: false }, updateDocument);
     return {
         success: true,
         message: "Xác nhận vé thành công",
@@ -167,20 +175,93 @@ const PayTicket = async (req) => {
             code: 400
         }
     }
-    if(foundTicket.isConfirmed !== true){
+    if (foundTicket.isConfirmed !== true) {
         return {
             success: false,
             message: "Vé xe chưa được xác nhận",
             code: 403
         }
     }
-    const updateDocument = {
+    if (foundTicket.isPaid === true) {
+        return {
+            success: false,
+            message: "Vé xe đã được thanh toán",
+            code: 403
+        }
+    }
+    if (foundUser.balance - foundTicket.price < 0) {
+        return {
+            success: false,
+            message: "Số dư tài khoản không đủ",
+            code: 400
+        }
+    }
+    const ticketUpdateDocument = {
         $set: { isPaid: true }
     };
-    const resp = await Ticket.updateMany({_id: req.body.ticketId, isDeleted: false}, updateDocument);
+    await Ticket.updateMany({ _id: req.body.ticketId, isDeleted: false }, ticketUpdateDocument);
+    const userUpdateDocument = {
+        $set: { balance: foundUser.balance - foundTicket.price }
+    }
+    await User.updateMany({ _id: id }, userUpdateDocument);
     return {
         success: true,
         message: "Thanh toán vé thành công",
+        code: 200
+    };
+}
+
+const DeleteTicket = async (req) => {
+    const id = req.body.info.id;
+    var foundUser = await User.findOne({ _id: id });
+    if (!foundUser) {
+        return {
+            success: false,
+            message: "Chưa đăng nhập",
+            code: 401
+        }
+    }
+    var foundTicket = await Ticket.findOne({ _id: req.body.ticketId, isDeleted: false });
+    if (!foundTicket) {
+        return {
+            success: false,
+            message: "Vé xe không tồn tại",
+            code: 400
+        }
+    }
+    if (foundTicket.isPaid === true) {
+        const current = new Date();
+        const tdp = await TripStopPoint.findOne({_id: foundTicket.departurePointId, isDeleted: false});
+        if (current < TimeService.combineDateTime(foundTicket.date, tdp.time)) {
+            if (current.getDate() == foundTicket.date.getDate()) {
+                const updateDocument = {
+                    $set: { balance: foundUser.balance + foundTicket.price / 2 }
+                }
+                await User.updateMany({ _id: id }, updateDocument);
+            }
+            else {
+                const updateDocument = {
+                    $set: { balance: foundUser.balance + foundTicket.price }
+                }
+                await User.updateMany({ _id: id }, updateDocument);
+            }
+
+        }
+        else {
+            return {
+                success: false,
+                message: "Qúa hạn hủy vé xe",
+                code: 403
+            }
+        }
+    }
+    const updateDocument = {
+        $set: { isDeleted: true }
+    };
+    await Ticket.updateMany({ _id: req.body.ticketId }, updateDocument);
+    return {
+        success: true,
+        message: "Hủy vé thành công",
         code: 200
     };
 }
@@ -189,5 +270,6 @@ module.exports = {
     CreateTicket,
     GetTicket,
     ConfirmTicket,
-    PayTicket
+    PayTicket,
+    DeleteTicket
 }
