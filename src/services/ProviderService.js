@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 
 const GetProvider = async (req) => {
     const id = req.body.info.id;
-    var foundProvider = await Provider.findOne({ _id: id, isDeleted: false }, "name phoneNumber email address");
+    var foundProvider = await Provider.findOne({ _id: id, isDeleted: false }, "name phoneNumber email address balance");
     if (foundProvider == null) return {
         success: false,
         message: "Nhà xe không tồn tại",
