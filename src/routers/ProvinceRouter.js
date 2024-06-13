@@ -4,6 +4,6 @@ const authMiddleware = require('../middlewares/AuthMiddleware');
 
 // router.get("/", authMiddleware, GetProvince);
 router.get("/", ProvinceController.GetProvince);
-router.post("/stop_point/", ProvinceController.GetStopPoint);
+router.get("/:id/stop_point/", ProvinceController.GetStopPoint);
 
 module.exports = router;

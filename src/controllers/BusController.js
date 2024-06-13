@@ -2,7 +2,7 @@ const BusService = require("../services/BusService");
 
 const GetBusTypes = async (req, res) => {
     try {
-        const resp = await BusService.GetBusTypes(req);
+        const resp = await BusService.GetBusTypes();
         res.status(resp.code).json(resp);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -18,14 +18,14 @@ const GetBuses = async (req, res) => {
     };
 }
 
-const GetBusById = async (req, res) => {
-    try {
-        const resp = await BusService.GetBusById(req);
-        res.status(resp.code).json(resp);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    };
-}
+// const GetBusById = async (req, res) => {
+//     try {
+//         const resp = await BusService.GetBusById(req);
+//         res.status(resp.code).json(resp);
+//     } catch (err) {
+//         res.status(500).json({ error: err.message });
+//     };
+// }
 
 const CreateBus = async (req, res) => {
     try {
@@ -50,5 +50,5 @@ module.exports = {
     CreateBus,
     DeleteBus,
     GetBuses,
-    GetBusById
+    // GetBusById
 }

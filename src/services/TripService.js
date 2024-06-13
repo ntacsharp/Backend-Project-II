@@ -124,6 +124,50 @@ const GetTrip = async (req) => {
     }
 }
 
+const GetProviderTrip = async (req) => {
+    const id = req.body.info.id;
+    var foundProvider = await Provider.findOne({ _id: id, isDeleted: false });
+    if (!foundProvider) {
+        return {
+            success: false,
+            message: "Chức năng chỉ dành cho nhà xe",
+            code: 403
+        }
+    }
+    const foundTrips = await Trip.find({providerId: id, isDeleted: false});
+    const tripList = [];
+    var promises = foundTrips.map(async (trip) => {
+        const busType = await BusType.findOne({_id: trip.busTypeId, isDeleted: false});
+        const tripStopPoints = await TripStopPoint.find({tripId: trip._id, isDeleted: false});
+        const tripDTO = {
+            id: trip._id,
+            busType: busType.type,
+            seatCount: busType.seatCount,
+            stopPoints: []
+        }
+        const tPromises = tripStopPoints.map(async (tsp) => {
+            const stopPoint = await StopPoint.findOne({_id: tsp.stopPointId, isDeleted: false});
+            const province = await Province.findOne({_id: stopPoint.provinceId, isDeleted: false});
+            const stopPointDTO = {
+                name: stopPoint.name,
+                address: stopPoint.address,
+                province: province.name,
+                order: tsp.order,
+                time: tsp.time
+            }
+            tripDTO.stopPoints.push(stopPointDTO);
+        });
+        await Promise.all(tPromises);
+        tripList.push(tripDTO);
+    })
+    await Promise.all(promises);
+    return {
+        success: true,
+        items: tripList,
+        code: 200
+    }
+}
+
 const CreateTrip = async (req) => {
     const id = req.body.info.id;
     var foundProvider = await Provider.findOne({ _id: id, isDeleted: false });
@@ -429,5 +473,6 @@ module.exports = {
     CreateMultipleTrip,
     AddPrice,
     CancelTrip,
-    DeleteTrip
+    DeleteTrip,
+    GetProviderTrip
 }

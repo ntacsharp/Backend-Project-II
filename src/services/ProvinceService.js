@@ -26,7 +26,7 @@ const GetProvince = async () => {
 
 const GetStopPoint = async (req) => {
     var resp = await StopPoint.find({
-        provinceId: req.body.provinceId,
+        provinceId: req.params.id,
         isDeleted: false
     }).then((allStopPoint) => {
         return resp = {

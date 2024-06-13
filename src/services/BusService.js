@@ -4,12 +4,12 @@ const Provider = require("../models/Provider");
 const BrandService = require("./BrandService");
 // const SeatService = require("./SeatService");
 
-const GetBusTypes = async (req) => {
+const GetBusTypes = async () => {
     var resp = await BusType.find({ isDeleted: false });
-    var rPromises = resp.map(async (busType) => {
-        busType.brands = await BrandService.GetBrand(busType.id);
-    });
-    await Promise.all(rPromises);
+    // var rPromises = resp.map(async (busType) => {
+    //     busType.brands = await BrandService.GetBrand(busType.id);
+    // });
+    // await Promise.all(rPromises);
     return {
         success: true,
         items: resp,
@@ -114,62 +114,62 @@ const GetBuses = async (req) => {
             code: 403
         }
     }
-    var resp = await Bus.find({
-        providerId: id, isDeleted: false
-    })
-        .then((allBuses) => {
-            return resp = {
-                success: true,
-                items: allBuses,
-                code: 200
-            };
-        })
-        .catch((err) => {
-            return resp = {
-                success: false,
-                errMsg: err.message,
-                code: 500
-            };
-        });
-    return resp;
+    const foundBuses = await Bus.find({providerId: id, isDeleted: false});
+    const busList = [];
+    const promises = foundBuses.map(async (bus) => {
+        const busType = await BusType.findOne({_id: bus.busTypeId, isDeleted: false});
+        const busDTO = {
+            id: bus._id,
+            plateNumber: bus.plateNumber,
+            busType: busType.type,
+            seatCount: busType.seatCount
+        }
+        busList.push(busDTO);
+    }) 
+    await Promise.all(promises);
+    return {
+        success: true,
+        items: busList,
+        code: 200
+    }
 }
 
-const GetBusById = async (req) => {
-    const id = req.body.info.id;
-    var foundProvider = await Provider.findOne({ _id: id, isDeleted: false });
-    if (!foundProvider) {
-        return {
-            success: false,
-            message: "Chức năng chỉ dành cho nhà xe",
-            code: 403
-        }
-    }
-    var resp = await Bus.findOne({
-        providerId: id,
-        _id: req.params.id,
-        isDeleted: false
-    })
-        .then((bus) => {
-            return resp = {
-                success: true,
-                items: bus,
-                code: 200
-            };
-        })
-        .catch((err) => {
-            return resp = {
-                success: false,
-                errMsg: err.message,
-                code: 500
-            };
-        });
-    return resp;
-}
+// const GetBusById = async (req) => {
+//     const id = req.body.info.id;
+//     var foundProvider = await Provider.findOne({ _id: id, isDeleted: false });
+//     if (!foundProvider) {
+//         return {
+//             success: false,
+//             message: "Chức năng chỉ dành cho nhà xe",
+//             code: 403
+//         }
+//     }
+//     var resp = await Bus.findOne({
+//         providerId: id,
+//         _id: req.params.id,
+//         isDeleted: false
+//     })
+//         .then((bus) => {
+//             return resp = {
+//                 success: true,
+//                 items: bus,
+//                 code: 200
+//             };
+//         })
+//         .catch((err) => {
+//             return resp = {
+//                 success: false,
+//                 errMsg: err.message,
+//                 code: 500
+//             };
+//         });
+//     return resp;
+// }
 
 module.exports = {
     GetBusTypes,
     CreateBus,
     DeleteBus,
     GetBuses,
-    GetBusById
+    // GetBusById
 }
