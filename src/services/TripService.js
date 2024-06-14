@@ -12,6 +12,7 @@ const TimeService = require("./TimeService");
 const Ticket = require("../models/Ticket");
 const addEmailToQueue = require("../services/EmailService");
 const User = require("../models/User");
+const Review = require("../models/Review");
 
 const GetUtility = async () => {
     var resp = await Utility.find({ isDeleted: false })
@@ -102,16 +103,39 @@ const GetTrip = async (req) => {
                 }
             })
             await Promise.all(uPromises);
+            const foundTickets = await Ticket.find({tripId: trip._id, date: req.body.departureTime, isConfirmed: true, isDeleted: false});
+            var sum = 0;
+            var cnt = 0;
+            const reviewList = [];
+            const foundReviews = await Review.find({tripId: trip._id, isDeleted: false});
+            const rPromises = foundReviews.map(async (review) => {
+                const sender = await User.findOne({_id: review.userId, isDeleted: false});
+                if(sender){
+                    sum += review.star;
+                    cnt++;
+                    const reviewDTO = {
+                        id: review.id,
+                        user: sender.name,
+                        comment: review.comment,
+                        star: review.star,
+                    }
+                    reviewList.push(reviewDTO);
+                }
+            })
+            await Promise.all(rPromises);
             const tripDTO = {
                 id: trip._id,
                 busType: busType.type,
+                availableSeatCount: busType.seatCount - foundTickets.length,
                 provider: provider.name,
                 departureProvince: foundDepartureProvince.name,
                 arrivalProvince: foundArrivalProvince.name,
                 departurePoints: departurePoints,
                 arrivalPoints: arrivalPoints,
                 utilities: uList,
-                price: trip.price
+                price: trip.price,
+                reviews: reviewList,
+                avgStar: (cnt > 0) ? sum/cnt : 0
             };
             resp.push(tripDTO);
         }

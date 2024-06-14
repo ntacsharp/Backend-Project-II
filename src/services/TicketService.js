@@ -10,7 +10,7 @@ const TimeService = require("./TimeService");
 
 const CreateTicket = async (req) => {
     const id = req.body.info.id;
-    var foundUser = await User.findOne({ _id: id });
+    var foundUser = await User.findOne({ _id: id, isDeleted: false });
     if (!foundUser) {
         return {
             success: false,
@@ -83,7 +83,7 @@ const CreateTicket = async (req) => {
 
 const GetTicket = async (req) => {
     const id = req.body.info.id;
-    var foundUser = await User.findOne({ _id: id });
+    var foundUser = await User.findOne({ _id: id, isDeleted: false });
     if (!foundUser) {
         return {
             success: false,
@@ -159,7 +159,7 @@ const ConfirmTicket = async (req) => {
 
 const PayTicket = async (req) => {
     const id = req.body.info.id;
-    var foundUser = await User.findOne({ _id: id });
+    var foundUser = await User.findOne({ _id: id, isDeleted: false });
     if (!foundUser) {
         return {
             success: false,
@@ -203,7 +203,7 @@ const PayTicket = async (req) => {
     const userUpdateDocument = {
         $set: { balance: foundUser.balance - foundTicket.price }
     }
-    await User.updateMany({ _id: id }, userUpdateDocument);
+    await User.updateMany({ _id: id, isDeleted: false }, userUpdateDocument);
     return {
         success: true,
         message: "Thanh toán vé thành công",
@@ -213,7 +213,7 @@ const PayTicket = async (req) => {
 
 const DeleteTicket = async (req) => {
     const id = req.body.info.id;
-    var foundUser = await User.findOne({ _id: id });
+    var foundUser = await User.findOne({ _id: id, isDeleted: false });
     if (!foundUser) {
         return {
             success: false,
@@ -237,13 +237,13 @@ const DeleteTicket = async (req) => {
                 const updateDocument = {
                     $set: { balance: foundUser.balance + foundTicket.price / 2 }
                 }
-                await User.updateMany({ _id: id }, updateDocument);
+                await User.updateMany({ _id: id, isDeleted: false }, updateDocument);
             }
             else {
                 const updateDocument = {
                     $set: { balance: foundUser.balance + foundTicket.price }
                 }
-                await User.updateMany({ _id: id }, updateDocument);
+                await User.updateMany({ _id: id, isDeleted: false }, updateDocument);
             }
 
         }
@@ -258,7 +258,7 @@ const DeleteTicket = async (req) => {
     const updateDocument = {
         $set: { isDeleted: true }
     };
-    await Ticket.updateMany({ _id: req.body.ticketId }, updateDocument);
+    await Ticket.updateMany({ _id: req.body.ticketId, isDeleted: false }, updateDocument);
     return {
         success: true,
         message: "Hủy vé thành công",

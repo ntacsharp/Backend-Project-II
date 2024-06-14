@@ -27,8 +27,18 @@ const AddBalance = async (req, res) => {
     };
 }
 
+const GetUser = async (req, res) => {
+    try {
+        const resp = await UserService.GetUser(req);
+        res.status(resp.code).json(resp);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    };
+}
+
 module.exports = {
     Login,
     Register,
-    AddBalance
+    AddBalance,
+    GetUser
 }

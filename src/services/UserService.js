@@ -73,8 +73,32 @@ const AddBalance = async (req) => {
     };
 }
 
+const GetUser = async (req) => {
+    const id = req.body.info.id;
+    var foundUser = await User.findOne({ _id: id });
+    if (!foundUser) {
+        return {
+            success: false,
+            message: "Chưa đăng nhập",
+            code: 401
+        }
+    }
+    const userDTO = {
+        name: foundUser.name,
+        phoneNumber: foundUser.phoneNumber,
+        email: foundUser.email,
+        balance: foundUser.balance,
+    }
+    return {
+        success: true,
+        item: userDTO,
+        code: 200
+    }; 
+}
+
 module.exports = {
     Login,
     Register,
-    AddBalance
+    AddBalance,
+    GetUser
 }

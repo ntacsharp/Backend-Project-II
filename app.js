@@ -34,6 +34,7 @@ const userRouter = require("./src/routers/UserRouter");
 const busRouter = require("./src/routers/BusRouter");
 const providerRouter = require("./src/routers/ProviderRouter");
 const ticketRouter = require("./src/routers/TicketRouter");
+const reviewRouter = require("./src/routers/ReviewRouter");
 const addEmailToQueue = require('./src/services/EmailService');
 
 //routes
@@ -43,22 +44,23 @@ app.use("/api/user", userRouter);
 app.use("/api/bus", busRouter);
 app.use("/api/provider", providerRouter);
 app.use("/api/ticket", ticketRouter);
+app.use("/api/review", reviewRouter);
 
 app.get('/', (req, res) => {
     res.status(200);
     res.send("Welcome to root URL of Server");
 });
 
-app.post('/send-email', (req, res) => {
-    const { to, subject, text } = req.body;
+// app.post('/send-email', (req, res) => {
+//     const { to, subject, text } = req.body;
 
-    if (!to || !subject || !text) {
-        return res.status(400).send('Missing required fields');
-    }
+//     if (!to || !subject || !text) {
+//         return res.status(400).send('Missing required fields');
+//     }
 
-    addEmailToQueue(to, subject, text);
-    res.status(200).send('Email queued');
-});
+//     addEmailToQueue(to, subject, text);
+//     res.status(200).send('Email queued');
+// });
 
 app.listen(PORT, (error) => {
     if (!error) {
