@@ -46,7 +46,7 @@ const CreateTicket = async (req) => {
                 seatCount: req.body.seatCount,
                 price: req.body.seatCount * foundTrip.price,
                 isPaid: false,
-                isConfirmed: false,
+                isConfirmed: true,
                 isDeleted: false
             });
             if (current.getDate() > newTicket.date.getDate()) {

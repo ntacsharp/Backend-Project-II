@@ -1,8 +1,6 @@
 const Bus = require("../models/Bus");
 const BusType = require("../models/BusType");
 const Provider = require("../models/Provider");
-const BrandService = require("./BrandService");
-// const SeatService = require("./SeatService");
 
 const GetBusTypes = async () => {
     var resp = await BusType.find({ isDeleted: false });

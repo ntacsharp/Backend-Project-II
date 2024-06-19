@@ -32,8 +32,7 @@ const Register = async (req) => {
         email: req.body.email,
         address: req.body.address,
         passwordHarsh: await AuthService.hashPassword(req.body.password),
-        isDeleted: false,
-        isVerified: true
+        isDeleted: false
     });
     Provider.create(newProvider);
     return {
@@ -48,11 +47,6 @@ const Login = async (req) => {
     if (foundProvider == null) return {
         success: false,
         message: "Không tồn tại nhà xe",
-        code: 401
-    };
-    if (foundProvider.isVerified == false) return {
-        success: false,
-        message: "Nhà xe chưa được xác nhận",
         code: 401
     };
     if (req.body.password != null) {
