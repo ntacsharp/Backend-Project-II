@@ -74,7 +74,8 @@ const GetTrip = async (req) => {
                 if (sp.provinceId == req.body.departureProvinceId) {
                     var spDTO = {
                         id: tsp._id,
-                        address: sp.name + " (" + sp.address + ")",
+                        name: sp.name,
+                        address: sp.address,
                         time: TimeService.combineDateTime(req.body.departureTime, tsp.time)
                     };
                     departurePoints.push(spDTO);
@@ -82,7 +83,8 @@ const GetTrip = async (req) => {
                 if (sp.provinceId == req.body.arrivalProvinceId) {
                     var spDTO = {
                         id: tsp._id,
-                        address: sp.name + " (" + sp.address + ")",
+                        name: sp.name,
+                        address: sp.address,
                         time: TimeService.combineDateTime(req.body.departureTime, tsp.time)
                     };
                     arrivalPoints.push(spDTO);
@@ -106,23 +108,6 @@ const GetTrip = async (req) => {
             const foundTickets = await Ticket.find({tripId: trip._id, date: req.body.departureTime, isConfirmed: true, isDeleted: false});
             var sum = 0;
             var cnt = 0;
-            const reviewList = [];
-            const foundReviews = await Review.find({tripId: trip._id, isDeleted: false});
-            const rPromises = foundReviews.map(async (review) => {
-                const sender = await User.findOne({_id: review.userId, isDeleted: false});
-                if(sender){
-                    sum += review.star;
-                    cnt++;
-                    const reviewDTO = {
-                        id: review.id,
-                        user: sender.name,
-                        comment: review.comment,
-                        star: review.star,
-                    }
-                    reviewList.push(reviewDTO);
-                }
-            })
-            await Promise.all(rPromises);
             const tripDTO = {
                 id: trip._id,
                 busType: busType.type,
@@ -134,8 +119,6 @@ const GetTrip = async (req) => {
                 arrivalPoints: arrivalPoints,
                 utilities: uList,
                 price: trip.price,
-                reviews: reviewList,
-                avgStar: (cnt > 0) ? sum/cnt : 0
             };
             resp.push(tripDTO);
         }

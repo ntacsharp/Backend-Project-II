@@ -5,6 +5,7 @@ const CreateTicket = async (req, res) => {
         const resp = await TicketService.CreateTicket(req);
         res.status(resp.code).json(resp);
     } catch (err) {
+        console.log(err);
         res.status(500).json({ error: err.message });
     };
 }

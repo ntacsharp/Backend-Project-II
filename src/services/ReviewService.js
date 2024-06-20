@@ -36,6 +36,38 @@ const AddReview = async (req) => {
     };
 }
 
+const GetReview = async (req) => {
+    const id = req.params.id;
+    var foundTrip = await Trip.findOne({ _id: id, isDeleted: false });
+    if (!foundTrip) {
+        return {
+            success: false,
+            message: "Không tồn tại",
+            code: 400
+        }
+    }
+    const reviewList = [];
+    const foundReviews = await Review.find({tripId: id, isDeleted: false});
+    const rPromises = foundReviews.map(async (review) => {
+        const sender = await User.findOne({_id: review.userId, isDeleted: false});
+        if(sender){
+            const reviewDTO = {
+                id: review.id,
+                user: sender.name,
+                comment: review.comment,
+                star: review.star,
+            }
+            reviewList.push(reviewDTO);
+        }
+    })
+    await Promise.all(rPromises);
+    return {
+        success: true,
+        items: reviewList,
+        code: 200
+    }
+} 
+
 const DeleteReview = async (req) => {
     const id = req.body.info.id;
     var foundUser = await User.findOne({ _id: id, isDeleted: false });
@@ -74,5 +106,6 @@ const DeleteReview = async (req) => {
 
 module.exports = {
     AddReview,
-    DeleteReview
+    DeleteReview,
+    GetReview
 }

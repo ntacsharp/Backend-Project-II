@@ -39,7 +39,7 @@ const CreateTicket = async (req) => {
             const newTicket = new Ticket({
                 userId: id,
                 tripId: req.body.tripId,
-                date: req.body.date,
+                date: new Date(req.body.date),
                 departurePointId: req.body.departurePointId,
                 arrivalPointId: req.body.arrivalPointId,
                 createdTime: new Date(),
@@ -49,7 +49,7 @@ const CreateTicket = async (req) => {
                 isConfirmed: true,
                 isDeleted: false
             });
-            if (current.getDate() > newTicket.date.getDate()) {
+            if (current > new Date(newTicket.date)) {
                 return {
                     success: false,
                     message: "Ngày đi không hợp lệ",
@@ -60,7 +60,7 @@ const CreateTicket = async (req) => {
             return {
                 success: true,
                 message: "Đặt vé xe thành công",
-                item: ticket,
+                // item: ticket,
                 code: 200
             };
         }
